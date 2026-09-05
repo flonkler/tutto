@@ -1,0 +1,70 @@
+.box--default {
+  --dice-border: #838383;
+  --dice-brim: #eee;
+  --dice-face: #fff;
+  --dice-dots: #343434;
+}
+.box--red {
+  --dice-dots: white;
+  --dice-face: #c83e3e;
+  --dice-brim: #af3333;
+  --dice-border: #883030;
+}
+.box--blue {
+  --dice-dots: white;
+  --dice-face: #3756bf;
+  --dice-brim: #304ba5;
+  --dice-border: #0a2068;
+}
+.box {
+  position: relative;
+  border-radius: 8px;
+  padding: .5rem;
+  margin: 0 2px 2px 0;
+  color: var(--dice-dots);
+  background: var(--dice-brim);
+  border: 2px solid var(--dice-border);
+  box-shadow: 1px 1px 0 1px var(--dice-border), 2px 2px 0 1px var(--dice-border);  
+}
+.box::before {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  width: calc(100% - 3px);
+  height: calc(100% - 3px);
+  border-radius: 24px;
+  background: var(--dice-face);
+  z-index: 1;
+}
+
+button.box {
+  cursor: pointer;
+  user-select: none;
+}
+button.box:not(:disabled):active {
+  box-shadow: none;
+  margin: 2px 0 0 2px;
+}
+button.box:disabled {
+  color: #838383;
+  background: #ddd;
+  cursor: initial;
+}
+button.box:disabled::before {
+  background: #eee;
+}
+.box__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 2px;
+}
+.dice-box > select {
+  height: 1.5rem;
+  width: 100%;
+  text-align: center;
+  color: inherit;
+}

@@ -4,7 +4,7 @@ import { GameContext, type ModeType } from "../components/Game"
 import "./GamePage.css"
 import { Dots } from "../components/Dots"
 import { Icon } from "../components/Icons"
-import { Bar } from "../components/Bar"
+import { Box } from "../components/Box"
 import { Statistics } from "../components/Statistics"
 
 export function GamePage() {
@@ -30,9 +30,9 @@ export function GamePage() {
         disabled = 6 - currentThrow.length - previousThrow.length < (triplet ? 3 : 1)
       }
       return (
-        <button disabled={disabled} key={dots} className="dice-box inputs__throw__item" onClick={() => addToThrow(dots)}>
+        <Box disabled={disabled} key={dots} onClick={() => addToThrow(dots)}>
           <Dots count={dots} />
-        </button>
+        </Box>
       )
     })
   }, [mode, previousThrow, currentThrow])
@@ -52,37 +52,56 @@ export function GamePage() {
       }
     } else {
       const offset = previousThrow.length
-      elements.push(...previousThrow.map((value, i) => <button key={i} className="dice-box" disabled><Dots count={value} size="full" /></button>))
-      elements.push(...currentThrow.map((value, i) => <button key={offset + i} className="dice-box dice-box--red" onClick={() => removeFromThrow(i)}><Dots count={value} size="full" /></button>))
+      elements.push(...previousThrow.map((value, i) => <Box key={i} disabled={true} onClick={() => {}}><Dots count={value} size="full" /></Box>))
+      elements.push(...currentThrow.map((value, i) => <Box key={offset + i} color="red" onClick={() => removeFromThrow(i)}><Dots count={value} size="full" /></Box>))
     }
     return elements
   }, [currentThrow, previousThrow, mode])
 
+  const modeText = useMemo(() => {
+    if (mode === "Aussetzen") return "⛔"
+    if (mode === "Feuerwerk") return "🎉"
+    if (mode === "Kleeblatt") return "🍀"
+    return mode
+  }, [mode])
+
   return (
     <>
-      <section className="attempt-info">
-        <div className="attempt-info__item">
-          <label>Spieler</label>
-          <span>Suff</span>
-        </div>
-        <div className="attempt-info__item">
-          <label>Punktzahl</label>
-          <span>5000</span>
-        </div>
-        <div className="attempt-info__item">
-          <label>Platzierung</label>
-          <span>5</span>
-        </div>
-  
-        
-        
-        <div className="player-info__score">
-          {score}
-        </div>
-      </section>
-
+      <div className="game-nav">
+        <Box onClick={() => {}}><Icon icon="undo" /></Box>
+        <h1>Michelangelo</h1>
+        <Box onClick={() => {}} disabled={true}><Icon icon="redo" /></Box>
+      </div>
+      
       <section>
-        
+        <Box color="blue">
+          <div className="attempt-info">
+            <div className="attempt-info__item">
+              <label>Runde</label>
+              <span>10</span>
+            </div>
+            <div className="attempt-info__item">
+              <label>Gesamt</label>
+              <span>5000</span>
+            </div>
+            <div className="attempt-info__item">
+              <label>Platz</label>
+              <span>5</span>
+            </div>
+            <div className="attempt-info__item">
+              <label>Wurf</label>
+              <span>2</span>
+            </div>
+            <div className="attempt-info__item attempt-info__item--large">
+              <label>Punkte</label>
+              <span className="">{score}</span>
+            </div>
+            <div className="attempt-info__item">
+              <label>Bonus</label>
+              <span>{modeText}</span>
+            </div>
+          </div>
+        </Box>
       </section>
 
       <section className="throw">
@@ -90,13 +109,7 @@ export function GamePage() {
       </section>
 
       <section className="inputs">
-        <div className="dice-box" style={{marginBottom: "12px"}}>
-          <select value={mode} onChange={e => changeMode(e.target.value as ModeType)}>
-            {["+200", "+300", "+400", "+500", "+600", "x2", "±1000", "Straße", "Feuerwerk", "Kleeblatt", "Aussetzen"].map((value, index) => (
-              <option key={index} value={value}>{value}</option>
-            ))}
-          </select>
-        </div>
+        
         <div className="inputs__throw">
           {diceButtons([1, 2, 3])}
           <button className="dice-box" onClick={() => nextThrow()} disabled={currentThrow.length === 0}><Icon icon="next-throw" /><span>Nächster Wurf</span></button>
@@ -110,4 +123,12 @@ export function GamePage() {
       </section>
     </>
   )
+  /*
+  <div className="dice-box" style={{marginBottom: "12px"}}>
+          <select value={mode} onChange={e => changeMode(e.target.value as ModeType)}>
+            {["+200", "+300", "+400", "+500", "+600", "x2", "±1000", "Straße", "Feuerwerk", "Kleeblatt", "Aussetzen"].map((value, index) => (
+              <option key={index} value={value}>{value}</option>
+            ))}
+          </select>
+        </div>*/
 }
