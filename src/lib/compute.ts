@@ -60,17 +60,17 @@ function computeStreetProbability(n: number) {
     return prob
 }
 
-export function applyTuttoBonus(score: number, mode: BonusType) {
-    if (mode === "+200") return score + 200
-    if (mode === "+300") return score + 300
-    if (mode === "+400") return score + 400
-    if (mode === "+500") return score + 500
-    if (mode === "+600") return score + 600
-    if (mode === "x2") return score * 2
+export function applyTuttoBonus(score: number, bonus: BonusType) {
+    if (bonus === "+200") return score + 200
+    if (bonus === "+300") return score + 300
+    if (bonus === "+400") return score + 400
+    if (bonus === "+500") return score + 500
+    if (bonus === "+600") return score + 600
+    if (bonus === "x2") return score * 2
     return score
 }
 
-export function computeStats(currentScore: number, n: number, mode: BonusType): StatsType {
+export function computeStats(currentScore: number, n: number, bonus: BonusType): StatsType {
     if (n === 0) {
         return {
             expectedScore: currentScore,
@@ -78,7 +78,7 @@ export function computeStats(currentScore: number, n: number, mode: BonusType): 
             blankProbability: 0
         }
     }
-    if (mode === "Straße") {
+    if (bonus === "Straße") {
         let blankProbability = 0
         if (n < 6 && n > 0) blankProbability = binom(5, 5 - n) / binom(6 + n - 1, n)
         return {
@@ -86,7 +86,7 @@ export function computeStats(currentScore: number, n: number, mode: BonusType): 
             tuttoProbability: computeStreetProbability(n),
             blankProbability: blankProbability
         }
-    } else if (mode === "±1000") {
+    } else if (bonus === "±1000") {
         const { blankProbability, tuttoProbability } = computeStats(0, n, "+200")
         return {
             expectedScore: tuttoProbability * 1000,
@@ -108,15 +108,15 @@ export function computeStats(currentScore: number, n: number, mode: BonusType): 
                 if (remainingDice === 0) {
                     // Tutto scenario: All dice count
                     tuttoProbability += prob
-                    expectedScore += applyTuttoBonus(currentScore + score, mode) * prob
+                    expectedScore += applyTuttoBonus(currentScore + score, bonus) * prob
                 } else if (remainingDice === n) {
                     // Blanks scenario: Only blanks, no score (expect for firework mode)
                     blankProbability += prob
-                    if (mode === "Feuerwerk") expectedScore += (currentScore + score) * prob
+                    if (bonus === "Feuerwerk") expectedScore += (currentScore + score) * prob
                 } else {
                     // Recursion scenario: Some dice count and player can throw again
                     expectedScore += (currentScore + score) * prob
-                    tuttoProbability += prob * computeStats(0, remainingDice, mode).tuttoProbability
+                    tuttoProbability += prob * computeStats(0, remainingDice, bonus).tuttoProbability
                 }
             }
         })

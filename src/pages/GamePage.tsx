@@ -6,9 +6,11 @@ import { Dots } from "../components/Dots"
 import { Icon } from "../components/Icons"
 import { Box } from "../components/Box"
 import { Statistics } from "../components/Statistics"
+import { PlayerInfoSection } from "../components/PlayerInfoSection"
+import { PlayerBonusSection } from "../components/PlayerBonusSection"
 
 export function GamePage() {
-  const { currentTurn, currentScore, remainingDice, addToThrow, removeFromThrow, nextThrow, players, canEndTurn, canThrowAgain, setBonus } = useContext(GameContext)
+  const { currentTurn, remainingDice, addToThrow, removeFromThrow, nextThrow, players, canEndTurn, canThrowAgain, setBonus } = useContext(GameContext)
 
   /*const currentRank = useMemo(() => {
     const currentScore = players[currentPlayerId].score
@@ -53,54 +55,19 @@ export function GamePage() {
     return elements.sort((a, b) => parseInt(a.key ?? "0") - parseInt(b.key ?? "0"))
   }, [currentTurn, remainingDice])
 
-  const bonusLabel = useMemo<string>(() => {
-    if (!currentTurn?.bonus) return ""
-    if (currentTurn.bonus === "Aussetzen") return "⛔"
-    if (currentTurn.bonus === "Feuerwerk") return "🎉"
-    if (currentTurn.bonus === "Kleeblatt") return "🍀"
-    return currentTurn.bonus
-  }, [currentTurn])
-
   return (
     <>
-      <div className="game-nav">
-        <Box onClick={() => {}}><Icon icon="undo" /></Box>
-        <h1>{currentTurn !== null ? players[currentTurn.playerId] : "tmp"}</h1>
+      {!currentTurn && <p>Start a game</p>}
+
+      {currentTurn && <section className="game-nav">
+        <Box onClick={() => setBonus(null)}><Icon icon="undo" /></Box>
+        <h1>{players[currentTurn.playerId]}</h1>
         <Box onClick={() => {}} disabled={true}><Icon icon="redo" /></Box>
-      </div>
-      
-      <section>
-        <Box color="blue">
-          <div className="attempt-info">
-            <div className="attempt-info__item">
-              <label>Runde</label>
-              <span>10</span>
-            </div>
-            <div className="attempt-info__item">
-              <label>Gesamt</label>
-              <span>5000</span>
-            </div>
-            <div className="attempt-info__item">
-              <label>Platz</label>
-              <span>5</span>
-            </div>
-            {currentTurn?.bonus && <>
-              <div className="attempt-info__item">
-                <label>Wurf</label>
-                <span>{currentTurn?.throws.length ?? 0}</span>
-              </div>
-              <div className="attempt-info__item attempt-info__item--large">
-                <label>Punkte</label>
-                <span className="">{currentScore}</span>
-              </div>
-              <div className="attempt-info__item">
-                <label>Bonus</label>
-                <span>{bonusLabel}</span>
-              </div>
-            </>}           
-          </div>
-        </Box>
-      </section>
+      </section>}
+
+      {currentTurn && <PlayerInfoSection />}
+
+      {!currentTurn?.bonus && <PlayerBonusSection />}
 
       <section className="throw">
         {diceDisplay}
@@ -118,12 +85,4 @@ export function GamePage() {
       </section>
     </>
   )
-  /*
-  <div className="dice-box" style={{marginBottom: "12px"}}>
-          <select value={mode} onChange={e => changeMode(e.target.value as ModeType)}>
-            {["+200", "+300", "+400", "+500", "+600", "x2", "±1000", "Straße", "Feuerwerk", "Kleeblatt", "Aussetzen"].map((value, index) => (
-              <option key={index} value={value}>{value}</option>
-            ))}
-          </select>
-        </div>*/
 }
