@@ -1,0 +1,97 @@
+.grid {
+  display: grid;
+
+}
+
+.main {
+  height: 100%;
+}
+
+.size-6 {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.nav {
+  display: flex;
+  padding-bottom: 4px;
+}
+
+button, select {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+button.input-field, select.input-field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 6px;
+  padding: .75rem .5rem;
+  border: 2px solid #838383;
+  color: #343434;
+  text-align: center;
+  font: 18px/145% var(--sans);
+  position: relative;
+}
+
+.dice-placeholder {
+  border-radius: 8px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid #838383;
+  width: 2.5rem;
+  padding: .5rem;
+  box-sizing: content-box;
+}
+.dice-box {
+  position: relative;
+  border: 2px solid #838383;
+  border-radius: 8px;
+  padding: .5rem;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 2px;
+  color: #343434;
+  cursor: pointer;
+}
+.dice-box::before {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  width: calc(100% - 3px);
+  height: calc(100% - 3px);
+  border-radius: 12px;
+  background: white;
+  z-index: 1;
+}
+.dice-box:disabled {
+  color: #838383;
+  background: #ddd;
+  cursor: initial;
+}
+.dice-box:disabled::before {
+  background: #eee;
+}
+.dice-box > * {
+  position: relative;
+  z-index: 2;
+}
+.dice-box > select {
+  height: 1.5rem;
+  width: 100%;
+  text-align: center;
+  color: inherit;
+}
+.dots--medium {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.dots--large {
+  width: 2.5rem;
+  height: 2.5rem;
+}
