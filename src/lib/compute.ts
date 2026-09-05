@@ -1,4 +1,4 @@
-import type { ModeType, StatsType } from "../components/Game.tsx";
+import type { BonusType, StatsType } from "../components/Game.tsx";
 import { calculateObjectSize } from "./utils.ts";
 
 function binom(n: number, k: number): number {
@@ -60,7 +60,7 @@ function computeStreetProbability(n: number) {
     return prob
 }
 
-export function applyTuttoBonus(score: number, mode: ModeType) {
+export function applyTuttoBonus(score: number, mode: BonusType) {
     if (mode === "+200") return score + 200
     if (mode === "+300") return score + 300
     if (mode === "+400") return score + 400
@@ -70,7 +70,7 @@ export function applyTuttoBonus(score: number, mode: ModeType) {
     return score
 }
 
-export function computeStats(currentScore: number, n: number, mode: ModeType): StatsType {
+export function computeStats(currentScore: number, n: number, mode: BonusType): StatsType {
     if (n === 0) {
         return {
             expectedScore: currentScore,

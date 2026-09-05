@@ -1,24 +1,34 @@
 import { createContext, useMemo, useState, type ReactNode } from "react";
 import { applyTuttoBonus, computeStats } from "../lib/compute";
 
-export type ModeType = "+200" | "+300" | "+400" | "+500" | "+600" | "x2" | "±1000" | "Straße" | "Feuerwerk" | "Kleeblatt" | "Aussetzen"
+export type BonusType = "+200" | "+300" | "+400" | "+500" | "+600" | "x2" | "±1000" | "Straße" | "Feuerwerk" | "Kleeblatt" | "Aussetzen"
 export type StatsType = {
   expectedScore: number,
   tuttoProbability: number,
   blankProbability: number,
 }
 
+type TurnType = {
+  playerId: number
+  bonus: BonusType,
+  score: number,
+  throws: number[][]
+}
+
 export type GameContextStatesType = {
   //players: PlayerType[],
   //currentPlayerId: number,
-  mode: ModeType,
-  statistics: StatsType,
-  score: number,
-  currentThrow: number[],
-  previousThrow: number[],
+  players: string[]
+  round: number
+  currentTurn: TurnType | null
+  currentScore: number
+  turns: TurnType[]
+  remainingDice: number
+  canThrowAgain: boolean
+  canEndTurn: boolean
 }
 export type GameContextMutationsType = {
-  changeMode: (nextMode: ModeType) => void,
+  setBonus: (bonus: BonusType) => void,
   addToThrow: (value: number) => void,
   removeFromThrow: (index: number) => void,
   nextThrow: () => void,
@@ -26,41 +36,67 @@ export type GameContextMutationsType = {
 
 export const GameContext = createContext<GameContextStatesType & GameContextMutationsType>(null);
 
+const INITIAL_PLAYERS = ["Spieler 1", "Spieler 2"]
+const INITIAL_TURN: TurnType = {
+  playerId: 0,
+  bonus: "Feuerwerk",
+  score: 0,
+  throws: [[]]
+}
+
 interface GameContextWrapperProps {
   children: ReactNode
 }
 export function GameContextWrapper({children}: GameContextWrapperProps) {
-  //const [players, setPlayers] = useState<PlayerType[]>(INITIAL_PLAYERS)
+  const [players, setPlayers] = useState<string[]>(INITIAL_PLAYERS)
   //const [currentPlayerId, setCurrentPlayerId] = useState<number>(0)
-  
-  const [currentThrow, setCurrentThrow] = useState<number[]>([])
-  const [previousThrow, setPreviousThrow] = useState<number[]>([])
-  const [mode, setMode] = useState<ModeType>("Aussetzen")
+  const [round, setRound] = useState<number>(0)
+  const [currentTurn, setCurrentTurn] = useState<TurnType | null>(INITIAL_TURN)
+  const [turns, setTurns] = useState<TurnType[]>([])
 
-  const score = useMemo<number>(() => {
-    const _throw = [...previousThrow, ...currentThrow]
-    let score = 0;
-    if (mode === "Straße") {
-      score = _throw.length === 6 ? 2000 : 0
-    } else if (mode === "±1000") {
-      score = _throw.length === 6 ? 1000 : 0
-    } else {
+  const remainingDice = useMemo<number>(() => {
+    if (!currentTurn) return 0
+    if (currentTurn.bonus === "Aussetzen") return 0
+    // Count dice (i.e., number of entries in the `throws` arrays)
+    const diceCount = currentTurn.throws.reduce((prev, value) => prev + value.length, 0)
+    // Compute how many dice can be added to throws. Firework bonus must be handled separately
+    // because number of dice may be larger than 6.
+    if (currentTurn.bonus === "Feuerwerk") {
+      if (diceCount % 6 === 0) {
+        if (currentTurn.throws[0].length === 0) {
+          // Ensure that 6 (instead of 0) is returned if a new turn was started
+          return 6
+        }
+        return 0
+      }
+      return 6 - (diceCount % 6)
+    }
+    return 6 - diceCount
+  }, [currentTurn])
+
+  const currentScore = useMemo<number>(() => {
+    if (!currentTurn) return 0
+    const baseScore = currentTurn.throws.reduce((prev, value) => {
+      let score = prev
       for (let i = 1; i <= 6; ++i) {
-        const count = _throw.filter(die => die === i).length
+        const count = value.filter(die => die === i).length
         if (i === 1) score += 1000 * Math.floor(count / 3) + 100 * (count % 3)
         else if (i === 5) score += 500 * Math.floor(count / 3) + 50 * (count % 3)
         else score += i * 100 * Math.floor(count / 3)
       }
-      if (_throw.length === 6) score = applyTuttoBonus(score, mode)
-    }
-    // TODO: Apply bonus
-    return score
-  }, [currentThrow, previousThrow, mode])
+      return score
+    }, 0)
+    if (currentTurn.bonus === "Aussetzen") return 0
+    if (currentTurn.bonus === "Straße") return remainingDice === 0 ? 2000 : 0
+    if (currentTurn.bonus === "±1000") return remainingDice === 0 ? 1000 : 0
+    if (remainingDice === 0) return applyTuttoBonus(baseScore, currentTurn.bonus)
+    return baseScore    
+  }, [currentTurn, remainingDice])
 
-  const statistics = useMemo<StatsType>(() => {
+  /*const statistics = useMemo<StatsType>(() => {
     // TODO: Compute stats
-    return computeStats(score, 6 - [...previousThrow, ...currentThrow].length, mode)
-  }, [mode, previousThrow, currentThrow])
+    return computeStats(score, remainingDice, currentTurn?.bonus ?? "Aussetzen")
+  }, [currentTurn, score, remainingDice])*/
 
   /*const mutations = {
     nextPlayer: () => {
@@ -113,54 +149,92 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     }
   }*/
 
-  function changeMode(nextMode: ModeType) {
-    const resetModes: ModeType[] = ["Straße", "Aussetzen", "Feuerwerk", "Kleeblatt"]
-    setMode(prev => {
-      // Reset attempt if the next or previous mode is part of the `resetModes` list. This avoids resetting the attempt
-      // when switching between similar bonuses (e.g., from +200 to +500).
-      if (resetModes.find(m => m === nextMode || m === prev)) {
-        resetThrow()
-      }
-      return nextMode
-    });
-  }
+  // function changeMode(nextMode: BonusType) {
+  //   const resetModes: BonusType[] = ["Straße", "Aussetzen", "Feuerwerk", "Kleeblatt"]
+  //   setMode(prev => {
+  //     // Reset attempt if the next or previous mode is part of the `resetModes` list. This avoids resetting the attempt
+  //     // when switching between similar bonuses (e.g., from +200 to +500).
+  //     if (resetModes.find(m => m === nextMode || m === prev)) {
+  //       resetThrow()
+  //     }
+  //     return nextMode
+  //   });
+  // }
 
-  function resetThrow() {
-    setCurrentThrow([])
-    setPreviousThrow([])
+  // function resetThrow() {
+  //   setCurrentThrow([])
+  //   setPreviousThrow([])
+  // }
+
+  function setBonus(bonus: BonusType) {
+    if (currentTurn) setCurrentTurn({ ...currentTurn, bonus })
   }
 
   function addToThrow(value: number) {
-    const _throw = [...previousThrow, ...currentThrow]
-    setCurrentThrow(prev => {
-      if (mode === "Straße") {
-        if (_throw.length === 6 || _throw.find(item => item === value)) return prev
-        return [...prev, value]
-      } else {
-        const dice = Array(value === 1 || value === 5 ? 1 : 3).fill(value)
-        console.log(_throw.length, dice.length, currentThrow, previousThrow)
-        if (_throw.length + dice.length > 6) return prev
-        return [...prev, ...dice]
+    if (!currentTurn) return
+    const dice: number[] = []
+    if (currentTurn.bonus === "Straße") {
+      // Ensure that number has not already been added `throws`
+      if (currentTurn.throws.find(t => t.indexOf(value) !== -1) !== undefined) return
+      dice.push(value)
+    } else {
+      // Add single 1 or 5, or triplets of 2s, 3s, 4s or 6s
+      dice.push(...Array(value === 1 || value === 5 ? 1 : 3).fill(value))
+    }
+    if (remainingDice < dice.length) return
+    setCurrentTurn(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        throws: prev.throws.map((value, index) => index === 0 ? [...value, ...dice] : value)
       }
     })
   }
 
   function removeFromThrow(index: number) {
-    setCurrentThrow(prev => {
-      const deleteCount = (mode === "Straße" || prev[index] === 1 || prev[index] === 5) ? 1 : 3
-      const deleteStart = prev.findIndex((v, i) => v === prev[index] && i >= Math.max(0, index - deleteCount + 1))  
-      return [...prev.filter((_, i) => i < deleteStart || i >= deleteStart + deleteCount)]
+    setCurrentTurn(prev => {
+      if (!prev) return prev
+      const latestThrow = prev.throws[0]
+      const deleteCount = (prev.bonus === "Straße" || latestThrow[index] === 1 || latestThrow[index] === 5) ? 1 : 3
+      const deleteStart = latestThrow.findIndex((v, i) => v === latestThrow[index] && i >= Math.max(0, index - deleteCount + 1))
+      return {
+        ...prev,
+        throws: [
+          [...latestThrow.filter((_, i) => i < deleteStart || i >= deleteStart + deleteCount)],
+          ...prev.throws.filter((_, i) => i > 0)
+        ]
+      }
     })
   }
 
   function nextThrow() {
-    // TODO: Handle firework scenario
-    setPreviousThrow([...previousThrow, ...currentThrow])
-    setCurrentThrow([])
+    setCurrentTurn(prev => {
+      if (!prev || !canThrowAgain) return prev
+      return {...prev, throws: [[], ...prev.throws]}
+    })
   }
 
-  const states: GameContextStatesType = {mode, score, currentThrow, previousThrow, statistics}
-  const mutations: GameContextMutationsType = {changeMode, addToThrow, removeFromThrow, nextThrow}
+  const canThrowAgain = useMemo<boolean>(() => {
+    if (!currentTurn) return false
+    if (currentTurn.bonus === "Aussetzen") return false
+    if (currentTurn.throws[0].length === 0) return false
+    if (currentTurn.bonus !== "Feuerwerk" && remainingDice === 0) return false
+    return true
+  }, [currentTurn, remainingDice])
+
+  const canEndTurn = useMemo<boolean>(() => {
+    if (!currentTurn) return false
+    if (currentTurn.throws[0].length === 0) return true
+    if (currentTurn.bonus !== "Feuerwerk" && remainingDice === 0) return true
+    if (currentTurn.bonus === "Feuerwerk") return false
+    if (currentTurn.bonus === "±1000") return false
+    if (currentTurn.bonus === "Kleeblatt") return false
+    if (currentTurn.bonus === "Straße") return false
+    return true
+  }, [currentTurn])
+
+  const states: GameContextStatesType = {currentScore, round, currentTurn, players, turns, remainingDice, canEndTurn, canThrowAgain}
+  const mutations: GameContextMutationsType = {setBonus, addToThrow, removeFromThrow, nextThrow}
 
   return (
     <GameContext value={{...states, ...mutations}}>
