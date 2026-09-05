@@ -13,10 +13,9 @@ export function Statistics() {
 
   return (
     <div className="statistics">
-      <h2>Erwartungswerte</h2>
       <label>Nächster Wurf</label>
       <span>{statistics.expectedScore}</span>
-      <h2>Wahrscheinlichkeiten</h2>
+
       <label>Tutto</label>
       <Bar progress={statistics.tuttoProbability} />
       <span>{formatPercentage(statistics.tuttoProbability)}</span>

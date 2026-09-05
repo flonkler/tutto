@@ -1,6 +1,6 @@
 interface DotsProps {
   count: number
-  size?: "small" | "medium" | "large"
+  size?: "small" | "medium" | "large" | "full"
 }
 export function Dots({ count, size = "medium" }: DotsProps) {
   const radius = 4

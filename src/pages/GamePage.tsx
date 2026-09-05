@@ -38,62 +38,65 @@ export function GamePage() {
   }, [mode, previousThrow, currentThrow])
 
   const diceDisplay = useMemo(() => {
-    const elements: ReactElement[] = []
+    const elements = []
     if (mode === "Straße") {
-      let disabledBefore = false
-      for (let i = 0; i < 6; ++i) {
-        let disabledAfter = false;
-        if (previousThrow.indexOf(i + 1) !== -1) {
-          disabledAfter = true;
-          elements.push(<button key={i} className="dice-box" disabled ><Dots count={i + 1} size="large" /></button>)
-        } else {
-          let index = currentThrow.indexOf(i + 1)
-          if (index !== -1) elements.push(<button key={i} className="dice-box" onClick={() => removeFromThrow(index)}><Dots count={i + 1} size="large" /></button>)
-          else elements.push(<div key={elements.length} className="dice-placeholder"></div>)
+      for (let value = 1; value <= 6; ++value) { 
+        if (previousThrow.indexOf(value) !== -1) {
+          elements.push(<button key={value - 1} className="dice-box" disabled><Dots count={value} size="full" /></button>)
+          continue;
         }
-        if (i > 0 && disabledBefore !== disabledAfter) elements.splice(elements.length - 1, 0, <div key={i+10} className="throw__spacer"></div>) 
-        disabledBefore = disabledAfter
+        const idx = currentThrow.indexOf(value)
+        if (idx !== -1) {
+          elements.push(<button key={value - 1} className="dice-box dice-box--red" onClick={() => removeFromThrow(idx)}><Dots count={value} size="full" /></button>)
+        }
       }
     } else {
-      elements.push(...previousThrow.map((value, i) => <button key={i} className="dice-box" disabled ><Dots count={value} size="large" /></button>))
-      elements.push(...currentThrow.map((value, i) => <button key={10 + i} className="dice-box" onClick={() => removeFromThrow(i)}><Dots count={value} size="large" /></button>))
-      while (elements.length < 6) elements.push(<div key={elements.length} className="dice-placeholder"></div>)
-      if (previousThrow.length > 0) elements.splice(previousThrow.length, 0, <div className="throw__spacer"></div>)
+      const offset = previousThrow.length
+      elements.push(...previousThrow.map((value, i) => <button key={i} className="dice-box" disabled><Dots count={value} size="full" /></button>))
+      elements.push(...currentThrow.map((value, i) => <button key={offset + i} className="dice-box dice-box--red" onClick={() => removeFromThrow(i)}><Dots count={value} size="full" /></button>))
     }
     return elements
   }, [currentThrow, previousThrow, mode])
 
   return (
     <>
-      <section className="player-info">
-        <div className="player-info__name">{/*players[currentPlayerId].name*/}</div>
+      <section className="attempt-info">
+        <div className="attempt-info__item">
+          <label>Spieler</label>
+          <span>Suff</span>
+        </div>
+        <div className="attempt-info__item">
+          <label>Punktzahl</label>
+          <span>5000</span>
+        </div>
+        <div className="attempt-info__item">
+          <label>Platzierung</label>
+          <span>5</span>
+        </div>
+  
+        
+        
         <div className="player-info__score">
           {score}
         </div>
       </section>
 
-      <section className="attempt-info">
-        <span className="attempt-info__score">{/*currentAttemptScore*/}</span>
-        <span className="attempt-info__counter">{/*attempt.throw*/}</span>
-
-        <div className="input-box">
-          <Icon icon="play" />
-        </div>
+      <section>
+        
       </section>
-
-      <div className="dice-box">
-        <select value={mode} onChange={e => changeMode(e.target.value as ModeType)}>
-          {["+200", "+300", "+400", "+500", "+600", "x2", "±1000", "Straße", "Feuerwerk", "Kleeblatt", "Aussetzen"].map((value, index) => (
-            <option key={index} value={value}>{value}</option>
-          ))}
-        </select>
-      </div>
 
       <section className="throw">
         {diceDisplay}
       </section>
 
-      <section className="inputs">    
+      <section className="inputs">
+        <div className="dice-box" style={{marginBottom: "12px"}}>
+          <select value={mode} onChange={e => changeMode(e.target.value as ModeType)}>
+            {["+200", "+300", "+400", "+500", "+600", "x2", "±1000", "Straße", "Feuerwerk", "Kleeblatt", "Aussetzen"].map((value, index) => (
+              <option key={index} value={value}>{value}</option>
+            ))}
+          </select>
+        </div>
         <div className="inputs__throw">
           {diceButtons([1, 2, 3])}
           <button className="dice-box" onClick={() => nextThrow()} disabled={currentThrow.length === 0}><Icon icon="next-throw" /><span>Nächster Wurf</span></button>

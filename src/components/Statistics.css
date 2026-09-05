@@ -1,8 +1,10 @@
 .statistics {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1rem;
+  grid-template-columns: auto 1fr;
+  gap: 0 1rem;
   align-items: center;
+
+  background: #f3f0bc;
 }
 
 .statistics h2 {

@@ -21,6 +21,7 @@ button, select {
   border: none;
   padding: 0;
   background: transparent;
+   font-family: var(--sans-font);
 }
 
 button.input-field, select.input-field {
@@ -33,7 +34,7 @@ button.input-field, select.input-field {
   border: 2px solid #838383;
   color: #343434;
   text-align: center;
-  font: 18px/145% var(--sans);
+ 
   position: relative;
 }
 
@@ -46,18 +47,37 @@ button.input-field, select.input-field {
   box-sizing: content-box;
 }
 .dice-box {
+  --dice-border: #838383;
+  --dice-brim: #eee;
+  --dice-face: #fff;
+  --dice-dots: #343434;
+
   position: relative;
-  border: 2px solid #838383;
+  border: 2px solid var(--dice-border);
+  box-shadow: 1px 1px 0 1px var(--dice-border), 2px 2px 0 1px var(--dice-border);
   border-radius: 8px;
   padding: .5rem;
-  background: #eee;
+  background: var(--dice-brim);
   display: flex;
   align-items: center;
   justify-content: center;
   column-gap: 2px;
-  color: #343434;
+  color: var(--dice-dots);
   cursor: pointer;
+  margin: 0 2px 2px 0;
 }
+.dice-box:active {
+  box-shadow: none;
+  margin: 2px 0 0 2px;
+}
+.dice-box.dice-box--red {
+  /*border: 2px solid red;*/
+  --dice-brim: #af3333;
+  --dice-dots: white;
+  --dice-border: #883030;
+  --dice-face: #c83e3e;
+}
+
 .dice-box::before {
   content: "";
   position: absolute;
@@ -65,8 +85,8 @@ button.input-field, select.input-field {
   left: 1.5px;
   width: calc(100% - 3px);
   height: calc(100% - 3px);
-  border-radius: 12px;
-  background: white;
+  border-radius: 24px;
+  background: var(--dice-face);
   z-index: 1;
 }
 .dice-box:disabled {
@@ -94,4 +114,8 @@ button.input-field, select.input-field {
 .dots--large {
   width: 2.5rem;
   height: 2.5rem;
+}
+.dots--full {
+  width: 100%;
+  height: 100%;
 }

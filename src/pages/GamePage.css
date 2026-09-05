@@ -1,40 +1,38 @@
-.player-info {
-  display: flex;
-  column-gap: .5rem;
-  justify-content: center;
-}
-
 .attempt-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: .5rem;
+  background: #3756bf;
+  color: white;
+}
+.attempt-info__item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-
-  width: 100%;
-  max-width: 24rem;
-  margin: 0 auto;
-  padding: 0 .5rem;
-  user-select: none;
+  justify-content: space-between;
+}
+.attempt-info__item label {
+  font-size: 0.8em;
+  text-transform: uppercase;
 }
 
-.attempt-info__grid {
-  display: grid;
-  gap: .5rem;
-  grid-template-columns: repeat(6, 1fr);
-  width: 100%;
+section {
+  padding: 0 6px;
+  box-sizing: border-box;
 }
-.attempt-info__grid__slot {
-  aspect-ratio: 1 / 1;
-  width: 100%;
-  border-radius: 8px;
-  background: #eee;
-}
+
 
 .throw {
   display: flex;
-  column-gap: .25rem;
+  column-gap: .5rem;
+  justify-content: center;
+  align-items: center;
+  height: 10rem;
 }
-.throw__spacer {
-  width: 1rem;
+.throw > * {
+  aspect-ratio: 1 / 1;
+  min-width: 40px;
+  max-width: 60px;
+  flex: 1 1 100%;
 }
 
 .inputs {
