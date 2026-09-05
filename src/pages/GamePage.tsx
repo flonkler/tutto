@@ -90,7 +90,6 @@ export function GamePage() {
       <section className="throw">
         {diceDisplay}
       </section>
-      
 
       <section className="inputs">    
         <div className="inputs__throw">
