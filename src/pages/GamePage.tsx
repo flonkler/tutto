@@ -4,6 +4,8 @@ import { GameContext, type ModeType } from "../components/Game"
 import "./GamePage.css"
 import { Dots } from "../components/Dots"
 import { Icon } from "../components/Icons"
+import { Bar } from "../components/Bar"
+import { Statistics } from "../components/Statistics"
 
 export function GamePage() {
   const { mode, changeMode, previousThrow, currentThrow, addToThrow, removeFromThrow, nextThrow, score } = useContext(GameContext)
@@ -98,6 +100,10 @@ export function GamePage() {
           {diceButtons([4, 5, 6])}
           <button className="dice-box"><Icon icon="stop" /><span>Zug beenden</span></button>
         </div>
+      </section>
+
+      <section>
+        <Statistics />
       </section>
     </>
   )

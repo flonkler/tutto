@@ -1,0 +1,14 @@
+.statistics {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.statistics h2 {
+  grid-column: span 3;
+}
+.statistics span {
+  font-family: monospace;
+  text-align: right;
+}

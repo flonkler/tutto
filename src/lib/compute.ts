@@ -1,4 +1,4 @@
-import type { ModeType } from "../components/Game.tsx";
+import type { ModeType, StatsType } from "../components/Game.tsx";
 import { calculateObjectSize } from "./utils.ts";
 
 function binom(n: number, k: number): number {
@@ -27,7 +27,7 @@ function* allDiceCombinations(numDice: number, start: number = 1): Generator<str
     }
 }
 
-const SCORE_MAPPING = {
+const SCORE_MAPPING: Record<string, number> = {
     "1": 100, "5": 50, 
     "111": 1000, "222": 200, "333": 300, "444": 400, "555": 500, "666": 600,
 }
@@ -43,23 +43,12 @@ function computeScore(combination: string): [number, number] {
 }
 
 
-const allPossibleOutcomes: {}[][] = Array(6).fill(null).map((_, i) => Array(i+2).fill(null).map(() => ({})))
+const allPossibleOutcomes: Record<string, number>[][] = Array(6).fill(null).map((_, i) => Array(i+2).fill(null).map(() => ({})))
 
 for (let combination of allDiceCombinations(6)) {
     const [score, remainder] = computeScore(combination);
     const lookup = allPossibleOutcomes[combination.length - 1][remainder]
     lookup[score] = 1 + (lookup?.[score] ?? 0)
-    //if (remainder === 6 && combination.length === 6) console.log(combination)
-}
-
-for (let i = 1; i <= 6; ++i) {
-    let total = 0;
-    allPossibleOutcomes[i-1].forEach(x => {
-        Object.values(x).forEach((y: number) => {
-            total += y
-        })
-    })
-    console.log(total, binom(i + 6 - 1, i))
 }
 
 function computeStreetProbability(n: number) {
@@ -81,11 +70,6 @@ export function applyTuttoBonus(score: number, mode: ModeType) {
     return score
 }
 
-export type StatsType = {
-    expectedScore: number,
-    tuttoProbability: number,
-    blankProbability: number,
-}
 export function computeStats(currentScore: number, n: number, mode: ModeType): StatsType {
     if (n === 0) {
         return {

@@ -1,0 +1,17 @@
+.bar {
+  height: .5rem;
+  border-radius: .25rem;
+  background: #eee;
+  position: relative;
+  overflow: hidden;
+}
+.bar__progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: green;
+  transition: width 150ms;
+  border-radius: inherit;
+}

@@ -2,11 +2,17 @@ import { createContext, useMemo, useState, type ReactNode } from "react";
 import { applyTuttoBonus, computeStats } from "../lib/compute";
 
 export type ModeType = "+200" | "+300" | "+400" | "+500" | "+600" | "x2" | "±1000" | "Straße" | "Feuerwerk" | "Kleeblatt" | "Aussetzen"
+export type StatsType = {
+  expectedScore: number,
+  tuttoProbability: number,
+  blankProbability: number,
+}
 
 export type GameContextStatesType = {
   //players: PlayerType[],
   //currentPlayerId: number,
   mode: ModeType,
+  statistics: StatsType,
   score: number,
   currentThrow: number[],
   previousThrow: number[],
@@ -51,9 +57,9 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     return score
   }, [currentThrow, previousThrow, mode])
 
-  const statistics = useMemo(() => {
+  const statistics = useMemo<StatsType>(() => {
     // TODO: Compute stats
-    console.log(computeStats(score, 6 - [...previousThrow, ...currentThrow].length, mode))
+    return computeStats(score, 6 - [...previousThrow, ...currentThrow].length, mode)
   }, [mode, previousThrow, currentThrow])
 
   /*const mutations = {
@@ -140,23 +146,20 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
   }
 
   function removeFromThrow(index: number) {
-    console.log("remove", index)
     setCurrentThrow(prev => {
       const deleteCount = (mode === "Straße" || prev[index] === 1 || prev[index] === 5) ? 1 : 3
-      const deleteStart = prev.findIndex((v, i) => v === prev[index] && i >= Math.max(0, index - deleteCount + 1))
-      console.log("delete", deleteStart, deleteCount)    
+      const deleteStart = prev.findIndex((v, i) => v === prev[index] && i >= Math.max(0, index - deleteCount + 1))  
       return [...prev.filter((_, i) => i < deleteStart || i >= deleteStart + deleteCount)]
     })
   }
 
   function nextThrow() {
     // TODO: Handle firework scenario
-    console.log("NExt", [...previousThrow, ...currentThrow])
     setPreviousThrow([...previousThrow, ...currentThrow])
     setCurrentThrow([])
   }
 
-  const states: GameContextStatesType = {mode, score, currentThrow, previousThrow}
+  const states: GameContextStatesType = {mode, score, currentThrow, previousThrow, statistics}
   const mutations: GameContextMutationsType = {changeMode, addToThrow, removeFromThrow, nextThrow}
 
   return (
