@@ -1,4 +1,5 @@
 import { createContext, useMemo, useState, type ReactNode } from "react";
+import { applyTuttoBonus, computeStats } from "../lib/compute";
 
 export type ModeType = "+200" | "+300" | "+400" | "+500" | "+600" | "x2" | "±1000" | "Straße" | "Feuerwerk" | "Kleeblatt" | "Aussetzen"
 
@@ -29,16 +30,14 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
   const [currentThrow, setCurrentThrow] = useState<number[]>([])
   const [previousThrow, setPreviousThrow] = useState<number[]>([])
   const [mode, setMode] = useState<ModeType>("Aussetzen")
-  
-  const statistics = useMemo(() => {
-    // TODO: Compute stats
-  }, [mode, previousThrow, currentThrow])
 
   const score = useMemo<number>(() => {
     const _throw = [...previousThrow, ...currentThrow]
     let score = 0;
     if (mode === "Straße") {
       score = _throw.length === 6 ? 2000 : 0
+    } else if (mode === "±1000") {
+      score = _throw.length === 6 ? 1000 : 0
     } else {
       for (let i = 1; i <= 6; ++i) {
         const count = _throw.filter(die => die === i).length
@@ -46,10 +45,16 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
         else if (i === 5) score += 500 * Math.floor(count / 3) + 50 * (count % 3)
         else score += i * 100 * Math.floor(count / 3)
       }
+      if (_throw.length === 6) score = applyTuttoBonus(score, mode)
     }
     // TODO: Apply bonus
     return score
   }, [currentThrow, previousThrow, mode])
+
+  const statistics = useMemo(() => {
+    // TODO: Compute stats
+    console.log(computeStats(score, 6 - [...previousThrow, ...currentThrow].length, mode))
+  }, [mode, previousThrow, currentThrow])
 
   /*const mutations = {
     nextPlayer: () => {
