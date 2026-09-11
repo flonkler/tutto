@@ -1,5 +1,4 @@
 import type { BonusType, StatsType } from "../components/Game.tsx";
-import { calculateObjectSize } from "./utils.ts";
 
 function binom(n: number, k: number): number {
     if (k === 0) return 1;

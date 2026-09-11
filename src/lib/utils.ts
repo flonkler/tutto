@@ -1,4 +1,4 @@
-export function calculateObjectSize(obj) {
+export function calculateObjectSize(obj: any) {
   // Initialize a variable to store the total size
   let totalSize = 0;
   // Get the keys of the object

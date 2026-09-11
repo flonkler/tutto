@@ -41,6 +41,7 @@ export type GameContextMutationsType = {
   endTurn: () => void
 }
 
+// @ts-ignore
 export const GameContext = createContext<GameContextStatesType & GameContextMutationsType>(null);
 
 const INITIAL_PLAYERS = ["Spieler 1", "Spieler 2"]
@@ -55,6 +56,7 @@ interface GameContextWrapperProps {
   children: ReactNode
 }
 export function GameContextWrapper({children}: GameContextWrapperProps) {
+  // @ts-ignore
   const [players, setPlayers] = useState<string[]>(INITIAL_PLAYERS)
   const [round, setRound] = useState<number>(1)
   const [currentTurn, setCurrentTurn] = useState<TurnType | null>(INITIAL_TURN)

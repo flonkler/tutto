@@ -6,7 +6,7 @@ export interface NavigationButtonProps {
   isActive?: boolean
   onClick?: () => void
 }
-export function NavigationButton({ title, icon, isActive, onClick }: NavigationButtonProps) {
+export function NavigationButton({ title, icon, onClick }: NavigationButtonProps) {
   return (
     <div onClick={onClick}>
       <Icon icon={icon} />
