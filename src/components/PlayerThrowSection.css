@@ -1,0 +1,33 @@
+.throw {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+.throw__display {
+  display: flex;
+  column-gap: .5rem;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  margin-bottom: 2rem;
+}
+.throw__display > * {
+  aspect-ratio: 1 / 1;
+  min-width: 40px;
+  max-width: 60px;
+  flex: 1 1 100%;
+}
+
+.throw__inputs {
+  user-select: none;
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 auto;
+  padding: 0 .5rem;
+  grid-template-columns: auto auto auto 1fr;
+  display: grid;
+  gap: .5rem;
+}

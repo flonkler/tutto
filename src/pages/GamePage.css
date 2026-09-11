@@ -13,37 +13,3 @@
   white-space: nowrap;
   overflow: hidden;
 }
-
-.throw {
-  display: flex;
-  column-gap: .5rem;
-  justify-content: center;
-  align-items: center;
-  height: 10rem;
-}
-.throw > * {
-  aspect-ratio: 1 / 1;
-  min-width: 40px;
-  max-width: 60px;
-  flex: 1 1 100%;
-}
-
-.inputs {
-  user-select: none;
-  width: 100%;
-  max-width: 22rem;
-  margin: 0 auto;
-  padding: 0 .5rem;
-}
-.inputs > div {
-  display: grid;
-  gap: .5rem;
-}
-.inputs__actions {
-  grid-template-columns: repeat(2, 1fr);
-  padding-bottom: 1rem;
-}
-
-.inputs__throw {
-  grid-template-columns: auto auto auto 1fr;
-}

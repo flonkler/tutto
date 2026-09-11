@@ -16,6 +16,12 @@
   --dice-brim: #304ba5;
   --dice-border: #0a2068;
 }
+.box--yellow {
+  --dice-dots: #343434;
+  --dice-face: #f8d15e;
+  --dice-brim: #fdbe02;
+  --dice-border: #dca502;
+}
 .box {
   position: relative;
   border-radius: 8px;

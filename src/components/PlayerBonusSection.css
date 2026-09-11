@@ -1,5 +1,18 @@
 .bonus {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+.bonus__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
+  max-width: 18rem;
+  width: 100%;
+}
+.bonus__grid > *:last-child {
+  grid-column: span 2;
 }

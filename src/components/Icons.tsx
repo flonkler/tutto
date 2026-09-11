@@ -1,6 +1,6 @@
 import type { ReactElement } from "react"
 
-export type IconType = "table" | "settings" | "play" | "undo" | "stop" | "next-player" | "next-throw" | "undo" | "redo"
+export type IconType = "table" | "settings" | "play" | "undo" | "stop" | "next-player" | "next-throw" | "undo" | "redo" | "close" | "info"
 export interface IconProps {
   icon: IconType
 }
@@ -47,7 +47,17 @@ const icons = {
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
       <path strokeLinecap="round" strokeLinejoin="round" d="m15 15 6-6m0 0-6-6m6 6H9a6 6 0 0 0 0 12h3" />
     </svg>
-  ),  
+  ),
+  "close": () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+  ),
+  "info": () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+    </svg>
+  ),
 }
 
 export function Icon({ icon }: IconProps): ReactElement | null {

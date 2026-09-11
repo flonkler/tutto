@@ -1,0 +1,26 @@
+.player-stats {
+  padding-bottom: 1rem;
+}
+.player-stats--expanded {
+  flex: 1 0 300px;
+}
+.player-stats__header {
+  display: flex;
+  align-items: center;
+  padding: 0 .5rem;
+  width: 100%;
+}
+.player-stats__header > h2 {
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0;
+}
+.player-stats__header > button {
+  display: flex; /* fixes layout problem */
+  justify-content: center;
+}
+.player-stats__header > button:first-child:last-child {
+  width: 100%;
+}
