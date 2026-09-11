@@ -60,7 +60,7 @@ function computeStreetProbability(n: number) {
     return prob
 }
 
-export function applyTuttoBonus(score: number, bonus: BonusType) {
+export function applyTuttoBonus(score: number, bonus: BonusType | null) {
     if (bonus === "+200") return score + 200
     if (bonus === "+300") return score + 300
     if (bonus === "+400") return score + 400
@@ -104,7 +104,7 @@ export function computeStats(currentScore: number, n: number, bonus: BonusType):
             for (const [s, count] of Object.entries(outcomes)) {
                 const score = parseInt(s)
                 const prob = count / N
-                x+=prob
+                x += prob
                 if (remainingDice === 0) {
                     // Tutto scenario: All dice count
                     tuttoProbability += prob
@@ -120,8 +120,6 @@ export function computeStats(currentScore: number, n: number, bonus: BonusType):
                 }
             }
         })
-        console.log("x", x, currentScore)
-
         return {
             expectedScore,
             tuttoProbability,

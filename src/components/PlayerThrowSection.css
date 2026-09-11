@@ -14,7 +14,7 @@
   height: 60px;
   margin-bottom: 2rem;
 }
-.throw__display > * {
+.throw__display > *:not(span) {
   aspect-ratio: 1 / 1;
   min-width: 40px;
   max-width: 60px;

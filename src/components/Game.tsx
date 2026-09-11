@@ -1,5 +1,5 @@
 import { createContext, useMemo, useState, type ReactNode } from "react";
-import { applyTuttoBonus, computeStats } from "../lib/compute";
+import { applyTuttoBonus } from "../lib/compute";
 
 export type BonusType = "+200" | "+300" | "+400" | "+500" | "+600" | "x2" | "±1000" | "Straße" | "Feuerwerk" | "Kleeblatt" | "Aussetzen"
 export type StatsType = {
@@ -10,7 +10,7 @@ export type StatsType = {
 
 type TurnType = {
   playerId: number
-  bonus: BonusType,
+  bonus: BonusType | null,
   score: number,
   throws: number[][]
 }
@@ -22,16 +22,23 @@ export type GameContextStatesType = {
   round: number
   currentTurn: TurnType | null
   currentScore: number
+  currentRank: number
+  currentTotal: number
+  scores: number[]
   turns: TurnType[]
   remainingDice: number
   canThrowAgain: boolean
   canEndTurn: boolean
+  statsExpanded: boolean
 }
 export type GameContextMutationsType = {
-  setBonus: (bonus: BonusType) => void,
-  addToThrow: (value: number) => void,
-  removeFromThrow: (index: number) => void,
-  nextThrow: () => void,
+  setBonus: (bonus: BonusType | null) => void
+  addToThrow: (value: number) => void
+  removeFromThrow: (index: number) => void
+  nextThrow: () => void
+  expandStats: () => void
+  collapseStats: () => void
+  endTurn: () => void
 }
 
 export const GameContext = createContext<GameContextStatesType & GameContextMutationsType>(null);
@@ -39,7 +46,7 @@ export const GameContext = createContext<GameContextStatesType & GameContextMuta
 const INITIAL_PLAYERS = ["Spieler 1", "Spieler 2"]
 const INITIAL_TURN: TurnType = {
   playerId: 0,
-  bonus: "Feuerwerk",
+  bonus: null,
   score: 0,
   throws: [[]]
 }
@@ -49,10 +56,11 @@ interface GameContextWrapperProps {
 }
 export function GameContextWrapper({children}: GameContextWrapperProps) {
   const [players, setPlayers] = useState<string[]>(INITIAL_PLAYERS)
-  //const [currentPlayerId, setCurrentPlayerId] = useState<number>(0)
-  const [round, setRound] = useState<number>(0)
+  const [round, setRound] = useState<number>(1)
   const [currentTurn, setCurrentTurn] = useState<TurnType | null>(INITIAL_TURN)
   const [turns, setTurns] = useState<TurnType[]>([])
+
+  const [statsExpanded, setStatsExpanded] = useState<boolean>(false)
 
   const remainingDice = useMemo<number>(() => {
     if (!currentTurn) return 0
@@ -76,6 +84,7 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
 
   const currentScore = useMemo<number>(() => {
     if (!currentTurn) return 0
+    if (currentTurn.bonus !== "Feuerwerk" && currentTurn.throws[0].length === 0) return 0
     const baseScore = currentTurn.throws.reduce((prev, value) => {
       let score = prev
       for (let i = 1; i <= 6; ++i) {
@@ -93,10 +102,22 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     return baseScore    
   }, [currentTurn, remainingDice])
 
-  /*const statistics = useMemo<StatsType>(() => {
-    // TODO: Compute stats
-    return computeStats(score, remainingDice, currentTurn?.bonus ?? "Aussetzen")
-  }, [currentTurn, score, remainingDice])*/
+  const scores = useMemo<number[]>(() => {
+    let result = Array(players.length).fill(0)
+    turns.forEach(turn => result[turn.playerId] += turn.score)
+    console.log(result)
+    return result
+  }, [turns])
+
+  const currentTotal = useMemo<number>(() => {
+    if (!currentTurn) return 0
+    return scores[currentTurn.playerId]
+  }, [scores, currentTurn])
+
+  const currentRank = useMemo<number>(() => {
+    // Determine rank by counting how many players have more points
+    return scores.reduce((rank, score) => rank + (score > currentTotal ? 1 : 0), 1)
+  }, [scores, currentTotal])
 
   /*const mutations = {
     nextPlayer: () => {
@@ -166,7 +187,7 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
   //   setPreviousThrow([])
   // }
 
-  function setBonus(bonus: BonusType) {
+  function setBonus(bonus: BonusType | null) {
     if (currentTurn) setCurrentTurn({ ...currentTurn, bonus })
   }
 
@@ -214,6 +235,14 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     })
   }
 
+  function endTurn() {
+    if (!currentTurn || !canEndTurn) return;
+    const nextPlayerId = (currentTurn.playerId + 1) % players.length
+    setTurns(prev => [...prev, {...currentTurn, score: currentScore + 0}])
+    setCurrentTurn(() => ({ playerId: nextPlayerId, bonus: null, score: 0, throws: [[]] }))
+    if (nextPlayerId === 0) setRound(prev => prev + 1)
+  }
+
   const canThrowAgain = useMemo<boolean>(() => {
     if (!currentTurn) return false
     if (currentTurn.bonus === "Aussetzen") return false
@@ -233,8 +262,15 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     return true
   }, [currentTurn])
 
-  const states: GameContextStatesType = {currentScore, round, currentTurn, players, turns, remainingDice, canEndTurn, canThrowAgain}
-  const mutations: GameContextMutationsType = {setBonus, addToThrow, removeFromThrow, nextThrow}
+  const states: GameContextStatesType = {
+    scores, currentScore, currentRank, currentTotal, round, currentTurn, players, turns, remainingDice, canEndTurn, canThrowAgain,
+    statsExpanded
+  }
+  const mutations: GameContextMutationsType = {
+    setBonus, addToThrow, removeFromThrow, nextThrow, endTurn,
+    expandStats: () => setStatsExpanded(true),
+    collapseStats: () => setStatsExpanded(false),
+  }
 
   return (
     <GameContext value={{...states, ...mutations}}>

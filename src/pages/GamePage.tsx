@@ -1,23 +1,23 @@
-import React, { useCallback, useContext, useMemo, type ReactElement } from "react"
-import { GameContext, type BonusType } from "../components/Game"
+import { useContext, useMemo } from "react"
+import { GameContext } from "../components/Game"
 
 import "./GamePage.css"
-import { Dots } from "../components/Dots"
 import { Icon } from "../components/Icons"
 import { Box } from "../components/Box"
-import { Statistics } from "../components/Statistics"
 import { PlayerInfoSection } from "../components/PlayerInfoSection"
 import { PlayerBonusSection } from "../components/PlayerBonusSection"
 import { PlayerThrowSection } from "../components/PlayerThrowSection"
 import { PlayerStatisticsSection } from "../components/PlayerStatisticsSection"
 
 export function GamePage() {
-  const { currentTurn, players, setBonus } = useContext(GameContext)
+  const { currentTurn, players, setBonus, scores } = useContext(GameContext)
 
-  /*const currentRank = useMemo(() => {
-    const currentScore = players[currentPlayerId].score
-    return players.filter(player => player.score > currentScore).length + 1
-  }, [players, currentPlayerId])*/
+  const pointLimitWarning = useMemo<string>(() => {
+    const names = players.filter((_, i) => scores[i] > 6000)
+    if (names.length === 0) return ""
+    if (names.length === 1) return `${names[0]} hat das Limit von 6000 Punkten erreicht.`
+    return `${names.length} Spieler haben das Limit von 6000 Punkten erreicht.`
+  }, [scores])
 
   return (
     <>
@@ -31,11 +31,18 @@ export function GamePage() {
 
       {currentTurn && <PlayerInfoSection />}
 
+      {pointLimitWarning !== "" && <section className="game-notification">
+        <Box color="yellow">
+          <Icon icon="warning" /><span>{pointLimitWarning}</span>
+        </Box>
+      </section>}
+
       {!currentTurn?.bonus && <PlayerBonusSection />}
 
-      {currentTurn?.bonus && <PlayerThrowSection />}
-
-      <PlayerStatisticsSection />
+      {currentTurn?.bonus && <>
+        <PlayerThrowSection />
+        <PlayerStatisticsSection />
+      </>}      
     </>
   )
 }

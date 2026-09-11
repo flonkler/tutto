@@ -7,7 +7,7 @@ import { Dots } from "./Dots"
 import { Icon } from "./Icons"
 
 export function PlayerThrowSection() {
-  const { currentTurn, remainingDice, addToThrow, removeFromThrow, nextThrow, canThrowAgain, canEndTurn } = useContext(GameContext)
+  const { currentTurn, remainingDice, addToThrow, removeFromThrow, nextThrow, canThrowAgain, canEndTurn, endTurn } = useContext(GameContext)
 
   const diceButtons = useCallback((items: number[]) => {
     if (!currentTurn) return null
@@ -44,6 +44,9 @@ export function PlayerThrowSection() {
         else elements.push(<Box key={key} disabled onClick={() => {}}><Dots count={t} size="full" /></Box>)
       })
     })
+    if (elements.length === 0) {
+      return (<span>Wähle die zählenden Würfel aus.</span>)
+    }
     return elements.sort((a, b) => parseInt(a.key ?? "0") - parseInt(b.key ?? "0"))
   }, [currentTurn, remainingDice])
   return (
@@ -57,7 +60,7 @@ export function PlayerThrowSection() {
           <Icon icon="next-throw" /><span>Nächster Wurf</span>
         </Box>
         {diceButtons([4, 5, 6])}
-        <Box onClick={() => {}} disabled={!canEndTurn}>
+        <Box onClick={() => endTurn()} disabled={!canEndTurn}>
           <Icon icon="stop" /><span>Zug beenden</span>
         </Box>
       </div>

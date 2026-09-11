@@ -3,7 +3,7 @@ import { Icon, type IconType } from "./Icons"
 export interface NavigationButtonProps {
   title: string
   icon: IconType
-  isActive?: Boolean
+  isActive?: boolean
   onClick?: () => void
 }
 export function NavigationButton({ title, icon, isActive, onClick }: NavigationButtonProps) {

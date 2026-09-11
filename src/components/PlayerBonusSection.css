@@ -12,6 +12,7 @@
   gap: 0.5rem;
   max-width: 18rem;
   width: 100%;
+  margin-top: 1rem;
 }
 .bonus__grid > *:last-child {
   grid-column: span 2;

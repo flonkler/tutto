@@ -1,26 +1,37 @@
 .player-stats {
   padding-bottom: 1rem;
 }
-.player-stats--expanded {
-  flex: 1 0 300px;
-}
-.player-stats__header {
-  display: flex;
-  align-items: center;
-  padding: 0 .5rem;
+.player-stats__container {
   width: 100%;
 }
-.player-stats__header > h2 {
+.player-stats__container__header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.player-stats__container__header > h2 {
   width: 100%;
   text-align: center;
   font-size: 1rem;
   font-weight: 400;
   margin: 0;
 }
-.player-stats__header > button {
+.player-stats__container__header > button {
   display: flex; /* fixes layout problem */
   justify-content: center;
 }
-.player-stats__header > button:first-child:last-child {
+.player-stats__container__header > button:first-child:last-child {
   width: 100%;
+}
+.player-stats__container__content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 1rem;
+  align-items: center;
+  margin: .5rem 0;
+}
+.player-stats__container__content span {
+  font-family: monospace;
+  text-align: right;
+  font-weight: 700;
 }

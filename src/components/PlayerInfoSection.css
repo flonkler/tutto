@@ -1,20 +1,24 @@
-.attempt-info {
+.player-info__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   row-gap: .5rem;
   width: 100%;
 }
-.attempt-info__item {
+.player-info__grid__item {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 }
-.attempt-info__item label {
+.player-info__grid__item label {
   font-size: 0.75em;
   text-transform: uppercase;
 }
-.attempt-info__item span {
+.player-info__grid__item span {
   font-size: 1.25rem;
   font-weight: 700;
+}
+.player-info__grid__item span.small {
+  font-size: 0.9rem;
+  line-height: 1.833;
 }

@@ -43,6 +43,12 @@
   background: var(--dice-face);
   z-index: 1;
 }
+div.box {
+  padding: .5rem 1rem;
+}
+div.box .box__content {
+  column-gap: .5rem;
+}
 
 button.box {
   cursor: pointer;
@@ -67,10 +73,4 @@ button.box:disabled::before {
   align-items: center;
   justify-content: center;
   column-gap: 2px;
-}
-.dice-box > select {
-  height: 1.5rem;
-  width: 100%;
-  text-align: center;
-  color: inherit;
 }
