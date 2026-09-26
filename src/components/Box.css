@@ -30,7 +30,8 @@
   color: var(--dice-dots);
   background: var(--dice-brim);
   border: 2px solid var(--dice-border);
-  box-shadow: 1px 1px 0 1px var(--dice-border), 2px 2px 0 1px var(--dice-border);  
+  box-shadow: 1px 1px 0 1px var(--dice-border), 2px 2px 0 1px var(--dice-border);
+  transform: translate3d(0, 0, 0); /* Fixes rendering bugs */  
 }
 .box::before {
   content: "";
