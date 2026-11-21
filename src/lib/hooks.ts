@@ -25,8 +25,7 @@ export function useResizeObserver(): [DOMRectReadOnly, (ref: any) => void] {
   const [contentBoxSize, setContentBoxSize] = useState<DOMRectReadOnly>(DOMRectReadOnly.fromRect())
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
-      console.log('resized', entry)
-      setContentBoxSize(entry.contentRect)
+      setContentBoxSize(entry.target.getBoundingClientRect())
     }
   })
   const refCallback = useCallback((ref: any) => {

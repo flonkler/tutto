@@ -57,7 +57,7 @@ export function PlayerThrowSection() {
       <div className="throw__inputs">
         {diceButtons([1, 2, 3])}
         <Box onClick={() => nextThrow()} disabled={!canThrowAgain}>
-          <Icon icon="next-throw" /><span>Nächster Wurf</span>
+          <Icon icon="next-throw" /><span>Würfeln</span>
         </Box>
         {diceButtons([4, 5, 6])}
         <Box onClick={() => endTurn()} disabled={!canEndTurn}>
