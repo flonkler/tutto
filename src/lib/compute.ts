@@ -66,6 +66,8 @@ export function applyTuttoBonus(score: number, bonus: BonusType | null) {
     if (bonus === "+500") return score + 500
     if (bonus === "+600") return score + 600
     if (bonus === "x2") return score * 2
+    if (bonus === "±1000") return 1000
+    if (bonus === "Straße") return 2000
     return score
 }
 

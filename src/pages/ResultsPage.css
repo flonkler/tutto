@@ -1,0 +1,50 @@
+.results {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.results table {
+  border: 1px solid #838383;
+  border-collapse: collapse;
+  border-radius: 4px;
+}
+.results table td {
+  padding: 0.5rem .25rem;
+  border: 1px solid #838383;
+  min-width: 3rem;
+}
+.score-table__player{
+  position: sticky;
+  left: 0;
+  background: white;
+  max-width: 5rem;
+}
+.result-table__row td {
+  width: 4.5rem;
+  vertical-align: top;
+}
+.result-table__row--highlight {
+  border: 3px solid #3756bf
+}
+.result-table-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+.result-table-cell span {
+  white-space-collapse: collapse;
+}
+.result-table-cell__detail {
+  font-size: .75rem;
+  font-weight: 700;
+  user-select: none;
+}
+.result-table-cell__detail--positive {
+  color: #3756bf;
+}
+.result-table-cell__detail--neutral {
+  color: #838383;
+}
+.result-table-cell__detail--negative {
+  color: #c83e3e;
+}

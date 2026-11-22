@@ -8,10 +8,11 @@ export type StatsType = {
   blankProbability: number,
 }
 
-type TurnType = {
+export type TurnType = {
   playerId: number
   bonus: BonusType | null,
-  score: number,
+  baseScore: number,
+  bonusAchieved: Boolean,
   throws: number[][]
 }
 
@@ -48,7 +49,8 @@ const INITIAL_PLAYERS = ["Spieler 1", "Spieler 2"]
 const INITIAL_TURN: TurnType = {
   playerId: 0,
   bonus: null,
-  score: 0,
+  baseScore: 0,
+  bonusAchieved: false,
   throws: [[]]
 }
 
@@ -84,10 +86,27 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
     return 6 - diceCount
   }, [currentTurn])
 
-  const currentScore = useMemo<number>(() => {
+  const currentBonusAchieved = useMemo<boolean>(() => {
+    if (!currentTurn) return false
+    if (currentTurn.bonus === "Feuerwerk") return false
+    if (currentTurn.bonus === "Kleeblatt") {
+      // To win instantly, two consecutive tuttos are needed (i.e., total of 12 counting dice)
+      const totalDice = currentTurn.throws.reduce((prev, current) => prev + current.length, 0)
+      if (totalDice === 12) return true
+    } else if (currentTurn.bonus !== "Aussetzen") {
+      // All other bonuses (except skips) are achieved in case of tutto
+      if (remainingDice === 0) return true
+    }
+    return false   
+  }, [currentTurn, remainingDice])
+
+  const currentBaseScore = useMemo<number>(() => {
     if (!currentTurn) return 0
+    if (currentTurn.bonus === "Straße") return 0
+    if (currentTurn.bonus === "Kleeblatt") return 0
+    if (currentTurn.bonus === "±1000") return 0
     if (currentTurn.bonus !== "Feuerwerk" && currentTurn.throws[0].length === 0) return 0
-    const baseScore = currentTurn.throws.reduce((prev, value) => {
+    return currentTurn.throws.reduce((prev, value) => {
       let score = prev
       for (let i = 1; i <= 6; ++i) {
         const count = value.filter(die => die === i).length
@@ -97,17 +116,17 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
       }
       return score
     }, 0)
-    if (currentTurn.bonus === "Aussetzen") return 0
-    if (currentTurn.bonus === "Straße") return remainingDice === 0 ? 2000 : 0
-    if (currentTurn.bonus === "±1000") return remainingDice === 0 ? 1000 : 0
-    if (remainingDice === 0) return applyTuttoBonus(baseScore, currentTurn.bonus)
-    return baseScore    
-  }, [currentTurn, remainingDice])
+  }, [currentTurn])
+
+  const currentScore = useMemo<number>(() => {
+    if (!currentTurn) return 0
+    if (currentBonusAchieved) return applyTuttoBonus(currentBaseScore, currentTurn.bonus)
+    return currentBaseScore
+  }, [currentBaseScore, currentBonusAchieved])
 
   const scores = useMemo<number[]>(() => {
     let result = Array(players.length).fill(0)
-    turns.forEach(turn => result[turn.playerId] += turn.score)
-    console.log(result)
+    turns.forEach(turn => result[turn.playerId] += turn.baseScore)
     return result
   }, [turns])
 
@@ -240,8 +259,14 @@ export function GameContextWrapper({children}: GameContextWrapperProps) {
   function endTurn() {
     if (!currentTurn || !canEndTurn) return;
     const nextPlayerId = (currentTurn.playerId + 1) % players.length
-    setTurns(prev => [...prev, {...currentTurn, score: currentScore + 0}])
-    setCurrentTurn(() => ({ playerId: nextPlayerId, bonus: null, score: 0, throws: [[]] }))
+    setTurns(prev => {
+      const bonus = currentTurn.bonus === null ? "Aussetzen" : currentTurn.bonus
+      return [
+        ...prev,
+        {...currentTurn, bonus, baseScore: currentBaseScore + 0, bonusAchieved: currentBonusAchieved}
+      ]
+    })
+    setCurrentTurn(() => ({ playerId: nextPlayerId, bonus: null, baseScore: 0, throws: [[]], bonusAchieved: false }))
     if (nextPlayerId === 0) setRound(prev => prev + 1)
   }
 
