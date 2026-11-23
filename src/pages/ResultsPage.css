@@ -1,31 +1,57 @@
-.results {
+.result-table-wrapper {
+  --table-border-width: 2px;
+  --table-border-color: #838383;
+  border-radius: 8px;
+  border: var(--table-border-width) solid var(--table-border-color);
+  box-shadow: 1px 1px 0 1px var(--table-border-color), 2px 2px 0 1px var(--table-border-color);
+
   overflow-x: auto;
-  padding-bottom: 8px;
 }
-.results table {
-  border: 1px solid #838383;
-  border-collapse: collapse;
-  border-radius: 4px;
+.result-table {
+  border-collapse: separate; /* Don't collapse */
+  border-spacing: 0;
 }
-.results table td {
-  padding: 0.5rem .25rem;
-  border: 1px solid #838383;
+.result-table__row {
+  background: white;
+}
+.result-table__row[data-highlight="true"] {
+  background: #eee;
+}
+.result-table td, .result-table th {
+  padding: .5rem .25rem;
+  border-right: var(--table-border-width) solid var(--table-border-color);
+  border-top: var(--table-border-width) solid var(--table-border-color);
   min-width: 3rem;
+  background: inherit;
 }
-.score-table__player{
+.result-table th {
+  border-top: none;
+  font-weight: 400;
+  padding: .25rem;
+}
+.result-table td:last-child, .result-table th:last-child {
+  border-right: none;
+}
+.result-table th:first-child {
+  position: sticky;
+  left: 0;
+  text-align: left;
+}
+.result-table__row__player {
   position: sticky;
   left: 0;
   background: white;
-  max-width: 5rem;
+  vertical-align: middle;
+  max-width: 7rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-.result-table__row td {
-  width: 4.5rem;
+.result-table__row__cell--turn {
   vertical-align: top;
 }
-.result-table__row--highlight {
-  border: 3px solid #3756bf
-}
-.result-table-cell {
+.result-table__row__cell--turn > div {
+  width: 3.75rem;
+  min-height: calc(2.25rem + 1px);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -34,17 +60,20 @@
 .result-table-cell span {
   white-space-collapse: collapse;
 }
-.result-table-cell__detail {
+.result-table__row__cell--turn label[data-highlight="true"] {
+  font-weight: 700;
+}
+.result-table__row__cell--turn span {
   font-size: .75rem;
   font-weight: 700;
   user-select: none;
 }
-.result-table-cell__detail--positive {
+.result-table__row__cell--turn span[data-type="positive"] {
   color: #3756bf;
 }
-.result-table-cell__detail--neutral {
+.result-table__row__cell--turn span[data-type="neutral"] {
   color: #838383;
 }
-.result-table-cell__detail--negative {
+.result-table__row__cell--turn span[data-type="negative"] {
   color: #c83e3e;
 }

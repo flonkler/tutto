@@ -20,7 +20,7 @@ export function ResultsPage() {
     const ownTurns = turns.filter(turn => turn.playerId === playerId);
     for (let i = 0; i < round; ++i) {
       if (i >= ownTurns.length) {
-        cells.push(<td></td>)
+        cells.push(<label>-</label>)
         continue
       }
       const turn = ownTurns[i]
@@ -44,31 +44,37 @@ export function ResultsPage() {
       }
 
       cells.push(
-        <td key={i} className="result-table__row__turn">
-          <div className="result-table-cell">
-          <span>{cumulativeScore}</span>
+        <>
+          <label data-highlight={cumulativeScore >= 6000}>{cumulativeScore}</label>
           {details.map((detail, index) => (
-            <span key={index} className={`result-table-cell__detail result-table-cell__detail--${detail.type}`}>{detail.content}</span>
-          ))}
-          </div>
-        </td>
+            <span key={index} data-type={detail.type}>{detail.content}</span>
+          ))}          
+        </>
       )
     }
-    return cells
+    return cells.map((cell, index) => (
+      <td key={index} className="result-table__row__cell result-table__row__cell--turn">
+        <div>
+          {cell}
+        </div>
+      </td>
+    ))
   }, [turns, round])
 
   return (
     <div>
-      <Box onClick={() => {}}><Icon icon="play" />Spieler hinzufügen</Box>
-      <div className="results">
-        <table>
+      <Box onClick={() => {}}><Icon icon="edit" />Spieler bearbeiten</Box>
+      <Box onClick={() => {}}><Icon icon="new" />Neues Spiel</Box>
+      <p></p>
+      <div className="result-table-wrapper">
+        <table className="result-table">
           <tbody>
-          <tr className="result-table__header">
-            <th></th>
-            {Array(round).fill(null).map((_, i) => <th>{i+1}</th>)}
+          <tr className="result-table__row">
+            <th>Runde</th>
+            {Array(round).fill(null).map((_, i) => <th key={i}>{i+1}</th>)}
           </tr>
           {players.map((player, index) => (
-            <tr key={index} className={"result-table__row" + (index === currentTurn?.playerId ? " result-table__row--hightlight" : "")}>
+            <tr key={index} className="result-table__row" data-highlight={index === currentTurn?.playerId}>
               <td className="result-table__row__player">{player}</td>
               {...getTurnCellsForPlayer(index)}
             </tr>
