@@ -1,3 +1,8 @@
+.result-buttons {
+  display: flex;
+  column-gap: .5rem;
+}
+
 .result-table-wrapper {
   --table-border-width: 2px;
   --table-border-color: #838383;
@@ -5,7 +10,10 @@
   border: var(--table-border-width) solid var(--table-border-color);
   box-shadow: 1px 1px 0 1px var(--table-border-color), 2px 2px 0 1px var(--table-border-color);
 
-  overflow-x: auto;
+  overflow: auto;
+  overscroll-behavior: none;
+  width: fit-content;
+  max-width: 100%;
 }
 .result-table {
   border-collapse: separate; /* Don't collapse */
@@ -14,7 +22,7 @@
 .result-table__row {
   background: white;
 }
-.result-table__row[data-highlight="true"] {
+.result-table__row[data-highlight="tre"] {
   background: #eee;
 }
 .result-table td, .result-table th {
@@ -28,6 +36,9 @@
   border-top: none;
   font-weight: 400;
   padding: .25rem;
+  position: sticky;
+  top: 0;
+  background: #eee;
 }
 .result-table td:last-child, .result-table th:last-child {
   border-right: none;
@@ -36,6 +47,7 @@
   position: sticky;
   left: 0;
   text-align: left;
+  z-index: 1;
 }
 .result-table__row__player {
   position: sticky;
@@ -45,6 +57,7 @@
   max-width: 7rem;
   white-space: nowrap;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 .result-table__row__cell--turn {
   vertical-align: top;

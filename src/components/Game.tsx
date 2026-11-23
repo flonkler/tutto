@@ -45,7 +45,7 @@ export type GameContextMutationsType = {
 // @ts-ignore
 export const GameContext = createContext<GameContextStatesType & GameContextMutationsType>(null);
 
-const INITIAL_PLAYERS = ["Spieler 1", "Spieler 2"]
+const INITIAL_PLAYERS = ["Alpha", "Beta", "Charlie", "Delta", "Echo", "Foxtrott", "Gaber Gandalf Gondor"]
 const INITIAL_TURN: TurnType = {
   playerId: 0,
   bonus: null,

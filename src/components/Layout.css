@@ -88,3 +88,9 @@
   flex-direction: column;
   height: 100%;
 }
+.layout-page:first-child {
+  padding-left: 0;
+}
+.layout-page:last-child {
+  padding-right: 0;
+}

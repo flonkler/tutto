@@ -21,16 +21,18 @@ export function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-export function useResizeObserver(): [DOMRectReadOnly, (ref: any) => void] {
-  const [contentBoxSize, setContentBoxSize] = useState<DOMRectReadOnly>(DOMRectReadOnly.fromRect())
+export function useResizeObserver<T extends Element>(): [DOMRectReadOnly, T | null, (ref: T | null) => void] {
+  const [contentRect, setContentRect] = useState<DOMRectReadOnly>(DOMRectReadOnly.fromRect())
+  const [element, setElement] = useState<T | null>(null)
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
-      setContentBoxSize(entry.target.getBoundingClientRect())
+      setContentRect(entry.contentRect)
+      setElement(entry.target as T)
     }
   })
-  const refCallback = useCallback((ref: any) => {
+  const refCallback = useCallback((ref: T | null) => {
     if (ref === null) resizeObserver.disconnect()
     else resizeObserver.observe(ref)
   }, [])
-  return [contentBoxSize, refCallback]
+  return [contentRect, element, refCallback]
 }

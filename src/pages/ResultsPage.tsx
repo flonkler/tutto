@@ -1,7 +1,7 @@
 import "./ResultsPage.css"
 
-import { useCallback, useContext, type ReactNode } from "react";
-import { GameContext, type TurnType } from "../components/Game";
+import { useCallback, useContext, useMemo, type ReactNode } from "react";
+import { GameContext } from "../components/Game";
 import { Box } from "../components/Box";
 import { Icon } from "../components/Icons";
 import { applyTuttoBonus } from "../lib/compute";
@@ -9,12 +9,11 @@ import { applyTuttoBonus } from "../lib/compute";
 export function ResultsPage() {
   const { players, turns, round, currentTurn } = useContext(GameContext)
 
-  function TurnCell(turn: TurnType, previousScore: number) {
-    if (turn.baseScore === 0 && !turn.bonusAchieved) return <td className="score-table_turn">+0</td>
-    
+  function scrollToEnd(ref: Element | null) {
+    if (ref !== null) ref.scrollIntoView({ behavior: "smooth", block: "end" })
   }
 
-  const getTurnCellsForPlayer = useCallback((playerId: number) => {
+  const tableBodyRow = useCallback((playerId: number) => {
     const cells: ReactNode[] = []
     let cumulativeScore = 0
     const ownTurns = turns.filter(turn => turn.playerId === playerId);
@@ -52,6 +51,7 @@ export function ResultsPage() {
         </>
       )
     }
+
     return cells.map((cell, index) => (
       <td key={index} className="result-table__row__cell result-table__row__cell--turn">
         <div>
@@ -61,22 +61,31 @@ export function ResultsPage() {
     ))
   }, [turns, round])
 
+  const tableHeader = useMemo<ReactNode[]>(() => {
+    return Array(round).fill(null).map((_, index) => (
+      <th key={index} ref={index === round - 1 ? scrollToEnd : undefined}>{index+1}</th>
+    ))
+  }, [round])
+
   return (
     <div>
-      <Box onClick={() => {}}><Icon icon="edit" />Spieler bearbeiten</Box>
-      <Box onClick={() => {}}><Icon icon="new" />Neues Spiel</Box>
+      <div className="result-buttons">
+        <Box onClick={() => {}}><Icon icon="edit" />Spieler bearbeiten</Box>
+        <Box onClick={() => {}} color="red"><Icon icon="new" />Neues Spiel</Box>
+      </div>
+      
       <p></p>
       <div className="result-table-wrapper">
         <table className="result-table">
           <tbody>
           <tr className="result-table__row">
             <th>Runde</th>
-            {Array(round).fill(null).map((_, i) => <th key={i}>{i+1}</th>)}
+            {...tableHeader}
           </tr>
           {players.map((player, index) => (
             <tr key={index} className="result-table__row" data-highlight={index === currentTurn?.playerId}>
               <td className="result-table__row__player">{player}</td>
-              {...getTurnCellsForPlayer(index)}
+              {...tableBodyRow(index)}
             </tr>
           ))}
           </tbody>
